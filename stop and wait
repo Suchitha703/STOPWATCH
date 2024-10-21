@@ -1,0 +1,81 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Stopwatch extends JFrame implements ActionListener {
+    private JLabel timeLabel;
+    private JButton startButton, stopButton, holdButton;
+    private Timer timer;
+    private int elapsedTime = 0;
+    private boolean isRunning = false;
+
+    public Stopwatch() {
+        setTitle("Stopwatch");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+
+        timeLabel = new JLabel("00:00:00");
+        timeLabel.setBounds(100, 50, 100, 30);
+        add(timeLabel);
+
+        startButton = new JButton("Start");
+        startButton.setBounds(30, 100, 80, 30);
+        startButton.addActionListener(this);
+        add(startButton);
+
+        stopButton = new JButton("Stop");
+        stopButton.setBounds(120, 100, 80, 30);
+        stopButton.addActionListener(this);
+        add(stopButton);
+
+        holdButton = new JButton("Hold");
+        holdButton.setBounds(210, 100, 80, 30);
+        holdButton.addActionListener(this);
+        add(holdButton);
+
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                elapsedTime++;
+                int hours = elapsedTime / 3600;
+                int minutes = (elapsedTime % 3600) / 60;
+                int seconds = elapsedTime % 60;
+                timeLabel.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            }
+        });
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == startButton) {
+            if (!isRunning) {
+                timer.start();
+                isRunning = true;
+            }
+        } else if (e.getSource() == stopButton) {
+            timer.stop();
+            isRunning = false;
+            elapsedTime = 0;
+            timeLabel.setText("00:00:00");
+        } else if (e.getSource() == holdButton) {
+            if (isRunning) {
+                timer.stop();
+                isRunning = false;
+            } else {
+                timer.start();
+                isRunning = true;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Stopwatch().setVisible(true);
+            }
+        });
+    }
+}
+
